@@ -134,6 +134,7 @@ kubectl -n app get secret secretkv -o jsonpath='{.data.password}' | base64 -d
 
 ```bash
 vault kv put kvv2/webapp/config username="static-user2" password="static-password2"
+
 # We need to wait a little for this to update
 sleep 20
 
