@@ -1,0 +1,15 @@
+defaultVaultConnection:
+  # toggles the deployment of the VaultAuthMethod CR
+  enabled: true
+
+  # Address of the Vault Server
+  # Example: http://vault.default.svc.cluster.local:8200
+  address: "http://192.168.0.238:8200"
+  skipTLSVerify: false
+  spec:
+  template:
+    spec:
+      containers:
+      - name: manager
+        args:
+        - "--client-cache-persistence-model=direct-encrypted"
