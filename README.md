@@ -108,7 +108,7 @@ vault kv put kvv2/webapp/config username="static-user" password="static-password
 
 ## Deploy the Vault Secrets Operator
 
-Use Helm to deploy the Vault Secrets Operator. You need to update the `vault/vault-operator-values.yaml` file to contain the correct address for Vault.
+Use Helm to deploy the Vault Secrets Operator. **You need to update the `vault/vault-operator-values.yaml` file to contain the correct address for Vault**.
 
 ```bash
 helm repo add hashicorp https://helm.releases.hashicorp.com
