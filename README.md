@@ -38,6 +38,15 @@ export K8S_HOST=$(kubectl -n app config view --raw --minify --flatten \
     --output 'jsonpath={.clusters[].cluster.server}')
 ```
 
+If you want to check the variables you can use the following:
+
+```bash
+echo $SA_SECRET_NAME
+echo $SA_JWT_TOKEN
+echo $SA_CA_CRT
+echo $K8S_HOST
+```
+
 ## Configure Vault
 
 Now, connect to Vault, enable and configure Kubernetes authentication, KV secrets engine, a role and policy for Kubernetes, and create a static secret.
