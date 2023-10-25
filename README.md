@@ -23,6 +23,8 @@ The service account generates a secret that is required for configuration automa
 kubectl -n app apply -f k8s/vault-auth-secret.yaml
 ```
 
+## Retrieve token and cert
+
 Now, retrieve the new secret name and token and store them as environment variables: `SA_SECRET_NAME`, `SA_JWT_TOKEN`, `SA_CA_CRT`, and `K8S_HOST`.
 
 ```bash
