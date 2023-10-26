@@ -8,6 +8,6 @@ spec:
   mount: demo-auth-mount
   kubernetes:
     role: example
-    serviceAccount: vault-auth
+    serviceAccount: vault-app-auth
     audiences:
       - vault

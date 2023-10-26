@@ -11,8 +11,7 @@ The Vault Secrets Operator operates by watching for changes to its supported set
 In Kubernetes, a service account provides an identity for processes that run in a Pod so that the processes can contact the API server. To configure Kubernetes, open the provided `vault-auth-service-account.yaml` file in your preferred text editor and examine its content for the service account definition to be used for this tutorial.
 
 ```bash
-kubectl create ns app
-kubectl -n app apply -f k8s/vault-auth-service-account.yaml
+kubectl apply -f k8s/vault-auth-service-account.yaml
 ```
 
 ### Kubernetes 1.24+ only
@@ -20,7 +19,16 @@ kubectl -n app apply -f k8s/vault-auth-service-account.yaml
 The service account generates a secret that is required for configuration automatically in Kubernetes 1.23. In Kubernetes 1.24+, you need to create the secret explicitly. You can use `kubectl get nodes` to check your Kubernetes version.
 
 ```bash
-kubectl -n app apply -f k8s/vault-auth-secret.yaml
+kubectl apply -f k8s/vault-auth-secret.yaml
+```
+
+## Create the Namespace and Service Account
+
+This namespace will be used to create secrets and the service account will be used to authenticate to vault using the example role created later
+
+```bash
+kubectl create ns app
+kubectl -n app apply -f k8s/app-service-account.yaml
 ```
 
 ## Retrieve token and cert
@@ -28,13 +36,13 @@ kubectl -n app apply -f k8s/vault-auth-secret.yaml
 Now, retrieve the new secret name and token and store them as environment variables: `SA_SECRET_NAME`, `SA_JWT_TOKEN`, `SA_CA_CRT`, and `K8S_HOST`.
 
 ```bash
-export SA_SECRET_NAME=$(kubectl -n app get secrets --output=json \
+export SA_SECRET_NAME=$(kubectl get secrets --output=json \
     | jq -r '.items[].metadata | select(.name|startswith("vault-auth-")).name')
-export SA_JWT_TOKEN=$(kubectl -n app get secret $SA_SECRET_NAME \
+export SA_JWT_TOKEN=$(kubectl get secret $SA_SECRET_NAME \
     --output 'go-template={{ .data.token }}' | base64 --decode)
-export SA_CA_CRT=$(kubectl -n app config view --raw --minify --flatten \
+export SA_CA_CRT=$(kubectl config view --raw --minify --flatten \
     --output 'jsonpath={.clusters[].cluster.certificate-authority-data}' | base64 --decode)
-export K8S_HOST=$(kubectl -n app config view --raw --minify --flatten \
+export K8S_HOST=$(kubectl config view --raw --minify --flatten \
     --output 'jsonpath={.clusters[].cluster.server}')
 ```
 
@@ -70,12 +78,11 @@ vault auth enable -path demo-auth-mount kubernetes
 vault write auth/demo-auth-mount/config \
      token_reviewer_jwt="$SA_JWT_TOKEN" \
      kubernetes_host="$K8S_HOST" \
-     kubernetes_ca_cert="$SA_CA_CRT" \
-     issuer="https://kubernetes.default.svc.cluster.local"
+     kubernetes_ca_cert="$SA_CA_CRT" 
 
 # Create a role
 vault write auth/demo-auth-mount/role/example \
-     bound_service_account_names=vault-auth \
+     bound_service_account_names=vault-app-auth \
      bound_service_account_namespaces=app \
      token_policies=myapp-kv-ro \
      ttl=24h

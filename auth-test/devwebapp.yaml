@@ -5,7 +5,7 @@ metadata:
   labels:
     app: devwebapp
 spec:
-  serviceAccountName: vault-auth
+  serviceAccountName: vault-app-auth
   containers:
     - name: devwebapp
       image: burtlo/devwebapp-ruby:k8s
